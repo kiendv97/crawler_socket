@@ -61,7 +61,7 @@ app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
     console.log(dataVariable);
     
-    ioServer.emit('send_data', dataVariable );
+    ioServer.emit('send_data', paramsQuery );
     try {
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
