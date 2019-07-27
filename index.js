@@ -1,4 +1,5 @@
 const http = require('http');
+const bodyParser = require('body-parser');
 const createError = require('http-errors');
 const app = require('express')();
 const httpServer = http.createServer(app)
@@ -13,6 +14,7 @@ httpServer.listen(3000, () => {
     console.log('Server is listening on port 3000');
 })
 require('./connect_mongo'); // connect mongoose
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
@@ -26,11 +28,10 @@ app.use((req, res, next) => {
     res.locals.dataVariable = Object.assign({}, req.query);
     next();
 });
-
-app.post(`/setinfo`, async function (req, res, next) {
+app.post('/setinfo', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        console.log("REq: body: "+req.body );
+        console.log("REq: body: " + req.body );
 
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
