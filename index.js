@@ -1,7 +1,8 @@
 const http = require('http');
 const bodyParser = require('body-parser');
 const createError = require('http-errors');
-const app = require('express')();
+var express = require('express');
+const app = express();
 const httpServer = http.createServer(app)
 // const io = require('socket.io-client');
 // const socket = io.connect('http://localhost:3030', { reconnection: true });
@@ -15,6 +16,9 @@ httpServer.listen(3000, () => {
 })
 require('./connect_mongo'); // connect mongoose
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
@@ -31,14 +35,14 @@ app.use((req, res, next) => {
 app.post('/setinfo', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        console.log("REq: body: " , JSON.stringify(paramsQuery) );
+        console.log("REq: body: ", JSON.stringify(paramsQuery));
 
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         console.log("ISDN: ", ISDN);
-        
+
         if (ISDN !== null) {
             console.log('will Sending');
-            
+
             const finalContent = await convert_content(paramsQuery.content)
             await sendDing(finalContent);
             res.status(200).send({
@@ -62,7 +66,7 @@ app.post('/setinfo', async function (req, res, next) {
 });
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    ioServer.emit('send_data', paramsQuery );
+    ioServer.emit('send_data', paramsQuery);
     try {
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
