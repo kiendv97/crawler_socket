@@ -35,8 +35,7 @@ app.post(`/setinfo`, async function (req, res, next) {
 
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
-            console.log(ISDN);
-            const finalContent = await convert_content(ISDN.content)
+            const finalContent = await convert_content(paramsQuery.content)
             await sendDing(finalContent);
             res.status(200).send({
                 status: 1,
