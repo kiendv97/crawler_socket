@@ -59,6 +59,8 @@ app.post(`/setinfo`, async function (req, res, next) {
 });
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
+    console.log(dataVariable);
+    
     ioServer.emit('send_data', dataVariable );
     try {
         const newISDN = {
