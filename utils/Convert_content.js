@@ -3,8 +3,7 @@ const moment = require('moment')
 
 async function convert(newMobi, username) {
 
-    //  var infoString = 'Số TB: ' + newMobi['Số TB'].toString() + ' Công ty: ' + newMobi['Công ty'].toString() + ' Mã cửa hàng: ' + newMobi['Mã cửa hàng'].toString()
-    var infoString = username.toString() + ': 0' + newMobi['Số TB'].toString() + '.cty' + newMobi['Công ty'].toString()
+    var infoString = username.toString() + ': 0' + newMobi['Số TB'].toString() + '.cty ' + newMobi['Công ty'].toString()
     var myDate = newMobi['Ngày thay đổi'].toString();
     myDate = myDate.split("-");
     var newDate = myDate[1] + "/" + myDate[0] + "/" + myDate[2];
@@ -22,7 +21,7 @@ async function convert(newMobi, username) {
 
             infoString += '\nSố còn, trả sau thường'
         } else if (newMobi['Mã cửa hàng'].toString().indexOf('2HCMCKCN') == 0) {
-            infoString += '\nSố còn, trả sau ' + newMobi['Loại cam kết'].toString().split('_')[0]
+            infoString += '\nSố còn, trả sau cam kết ' + newMobi['Loại cam kết'].toString().split('_')[0].slice(2) + 'K';
         } else {
             infoString += '\nSố không còn'
         }
