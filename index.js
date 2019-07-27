@@ -27,9 +27,7 @@ app.use((req, res, next) => {
     console.log('res.locals.dataVariable ' + res.locals.dataVariable);
     next();
 });
-ioServer.on('connection', (socket) => {
-    socket.emit('send_data', dataVariable )
-})
+
 app.post(`/setinfo`, async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
@@ -61,6 +59,7 @@ app.post(`/setinfo`, async function (req, res, next) {
 });
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
+    ioServer.emit('send_data', dataVariable );
     try {
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
