@@ -2,8 +2,8 @@ const http = require('http');
 const createError = require('http-errors');
 const app = require('express')();
 const httpServer = http.createServer(app)
-const io = require('socket.io-client');
-const socket = io.connect('http://localhost:3030', { reconnection: true });
+// const io = require('socket.io-client');
+// const socket = io.connect('http://localhost:3030', { reconnection: true });
 const ioServer = require('socket.io')(httpServer);
 const sendDing = require('./utils/Send_ding');
 const convert_content = require('./utils/Convert_content');
@@ -26,6 +26,9 @@ app.use((req, res, next) => {
     res.locals.dataVariable = Object.assign({}, req.query);
     console.log('res.locals.dataVariable ' + res.locals.dataVariable);
     next();
+});
+ioServer.on('connection', (socket) => {
+    socket.on('send_data', dataVariable )
 })
 app.post(`/setinfo`, async function (req, res, next) {
     try {
@@ -58,55 +61,50 @@ app.post(`/setinfo`, async function (req, res, next) {
 });
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    ioServer.on('connection', async (socket) => {
-        try {
-            const newISDN = {
-                telco: paramsQuery.telco || 'mobi',
-                keyword: paramsQuery.keyword || 0,
-                user: paramsQuery.user || 'admin',
-                status: 0, //pending
-    
-            }
-            const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
-            const checkRequest5Minutes = response ? new Date(Date.now() - response.updatedAt).getMinutes() : 0;
-            console.log(response);
-            if (response === null) {
-                const result = await ISDNModel.create(newISDN);
-                console.log(result + ': result');
-                socket.emit('send_data', paramsQuery.keyword);
-    
-                res.status(200).send({
-                    status: 1,
-                    result: 'create'
-                })
-    
-            } else if (checkRequest5Minutes > 5) {
-                await ISDNModel.updateOne({ keyword: newISDN.keyword }, { $set: { status: 0, updatedAt: Date.now() } });
-                socket.emit('send_data', paramsQuery.keyword);
-    
-                console.log('update');
-                res.status(200).send({
-                    status: 1,
-                    result: 'update'
-                })
-            } else {
-                res.status(203).send({
-                    status: 0,
-                    result: 'request must be greater 5 minute'
-                })
-            }
-        } catch (error) {
-            console.log(error);
-    
-            res.status(500).send({
+    try {
+        const newISDN = {
+            telco: paramsQuery.telco || 'mobi',
+            keyword: paramsQuery.keyword || 0,
+            user: paramsQuery.user || 'admin',
+            status: 0, //pending
+
+        }
+        const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
+        const checkRequest5Minutes = response ? new Date(Date.now() - response.updatedAt).getMinutes() : 0;
+        console.log(response);
+        if (response === null) {
+            const result = await ISDNModel.create(newISDN);
+            console.log(result + ': result');
+
+            res.status(200).send({
+                status: 1,
+                result: 'create'
+            })
+
+        } else if (checkRequest5Minutes > 5) {
+            await ISDNModel.updateOne({ keyword: newISDN.keyword }, { $set: { status: 0, updatedAt: Date.now() } });
+
+            console.log('update');
+            res.status(200).send({
+                status: 1,
+                result: 'update'
+            })
+        } else {
+            res.status(203).send({
                 status: 0,
-                result: error
+                result: 'request must be greater 5 minute'
             })
         }
-        socket.disconnect()
-    });
-   
-   
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+
+
 
 });
 // io.on('connection', (socket) => {
