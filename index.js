@@ -62,11 +62,9 @@ app.get('/check', async (req, res, next) => {
         }
         const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
         const checkRequest5Minutes = response ? new Date(Date.now() - response.updatedAt).getMinutes() : 0;
-        console.log(response);
+        console.log("Find keyword:" + response);
         if (response === null) {
             const result = await ISDNModel.create(newISDN);
-            console.log(result + ': result');
-
             res.status(200).send({
                 status: 1,
                 result: 'create'
