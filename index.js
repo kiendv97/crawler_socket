@@ -28,7 +28,7 @@ app.post('/setinfo', async function (req, res, next) {
         const paramsQuery = Object.assign({}, req.body);
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
-            const finalContent = await convert_content(paramsQuery.content)
+            const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
             await sendDing(finalContent);
             res.status(200).send({
                 status: 1,
@@ -95,26 +95,3 @@ app.get('/check', async (req, res, next) => {
 
 
 });
-// io.on('connection', (socket) => {
-//     console.log('connection ' + socket);
-//     socket.on('disconnect', () => {
-//         console.log('[index.js][disconnect] - Disconnected from socketId: ' + socket.id);
-
-//     })
-//     socket.emit('send_data', dataVariable);
-
-//     socket.on('receive_data', async (data) => {
-//         console.log(data);
-
-//         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: data.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: data.content } })
-//         if (ISDN !== null) {
-//             console.log(ISDN);
-//             const finalContent = await convert_content(ISDN.content)
-//             await sendDing(finalContent);
-//         } else {
-//             console.log(ISDN);
-
-//             socket.disconnect();
-//         }
-//     })
-// })
