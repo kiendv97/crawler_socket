@@ -4,13 +4,11 @@ const createError = require('http-errors');
 var express = require('express');
 const app = express();
 const httpServer = http.createServer(app)
-// const io = require('socket.io-client');
-// const socket = io.connect('http://localhost:3030', { reconnection: true });
+
 const ioServer = require('socket.io')(httpServer);
 const sendDing = require('./utils/Send_ding');
 const convert_content = require('./utils/Convert_content');
 const ISDNModel = require('./model/model');
-let dataVariable;
 httpServer.listen(3000, () => {
     console.log('Server is listening on port 3000');
 })
@@ -25,24 +23,11 @@ app.use((req, res, next) => {
 
 });
 
-// app.use(function (req, res, next) {
-//     next(createError(404));
-// });
-app.use((req, res, next) => {
-    res.locals.dataVariable = Object.assign({}, req.query);
-    next();
-});
 app.post('/setinfo', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        console.log("REq: body: ", JSON.stringify(paramsQuery));
-
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
-        console.log("ISDN: ", ISDN);
-
         if (ISDN !== null) {
-            console.log('will Sending');
-
             const finalContent = await convert_content(paramsQuery.content)
             await sendDing(finalContent);
             res.status(200).send({
