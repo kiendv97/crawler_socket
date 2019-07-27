@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 app.post('/setinfo', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        console.log("REq: body: " , req.body );
+        console.log("REq: body: " , JSON.stringify(paramsQuery) );
 
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         console.log("ISDN: ", ISDN);
