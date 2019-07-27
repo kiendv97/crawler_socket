@@ -24,17 +24,18 @@ app.use((req, res, next) => {
 // });
 app.use((req, res, next) => {
     res.locals.dataVariable = Object.assign({}, req.query);
-    console.log('res.locals.dataVariable ' + res.locals.dataVariable);
     next();
 });
 
 app.post(`/setinfo`, async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        console.log(req.body);
+        console.log("REq: body: "+req.body );
 
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
+            console.log('will Sending');
+            
             const finalContent = await convert_content(paramsQuery.content)
             await sendDing(finalContent);
             res.status(200).send({
@@ -58,8 +59,6 @@ app.post(`/setinfo`, async function (req, res, next) {
 });
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    console.log(dataVariable);
-    
     ioServer.emit('send_data', paramsQuery );
     try {
         const newISDN = {
@@ -84,7 +83,6 @@ app.get('/check', async (req, res, next) => {
         } else if (checkRequest5Minutes > 5) {
             await ISDNModel.updateOne({ keyword: newISDN.keyword }, { $set: { status: 0, updatedAt: Date.now() } });
 
-            console.log('update');
             res.status(200).send({
                 status: 1,
                 result: 'update'
