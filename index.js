@@ -28,7 +28,7 @@ app.use((req, res, next) => {
     next();
 });
 ioServer.on('connection', (socket) => {
-    socket.on('send_data', dataVariable )
+    socket.emit('send_data', dataVariable )
 })
 app.post(`/setinfo`, async function (req, res, next) {
     try {
