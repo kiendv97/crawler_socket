@@ -29,6 +29,8 @@ app.post('/setinfo', async function (req, res, next) {
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
             const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
+            console.log('Dataxxxx: ' + data.toString().indexOf('Số còn'));
+            console.log('Datayyyy: ' + data.toString().indexOf('Số không còn'));
             await sendDing(finalContent);
             res.status(200).send({
                 status: 1,
