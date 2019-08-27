@@ -23,10 +23,10 @@ app.use((req, res, next) => {
 
 });
 app.get('/getdetails', async (req, res, next) => {
-    const paramsQuery = Object.assign({}, req.query, { status: 1 });
+    const paramsQuery = Object.assign({}, req.query, { status: 0 });
     console.log(paramsQuery);
     try {
-        const response = await ISDNModel.findOne({ $and: [paramsQuery] }, null, { sort: { updatedAt: -1 } });
+        const response = await ISDNModel.findOne({ $and: [paramsQuery] });
         if (response) {
             res.status(200).send({
                 status: 1,
