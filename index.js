@@ -26,7 +26,7 @@ app.get('/getdetails', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query, { status: 0 });
     console.log(paramsQuery);
     try {
-        const response = await ISDNModel.findOne({telco: req.query.telco, status: 0});
+        const response = await ISDNModel.findOne({ telco: paramsQuery.telco, status: 0 });
         console.log(response);
         
         if (response) {
