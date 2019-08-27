@@ -26,26 +26,51 @@ app.get('/getdetails', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query, { status: 1 });
     console.log(paramsQuery);
     try {
-      const response = await ISDNModel.findOne({ $and: [paramsQuery] }, null, { sort: { updatedAt: -1 } });
-      if (response) {
-        res.status(200).send({
-          status: 1,
-          result: response
-        })
-      } else {
-        res.status(203).send({
-          status: 0,
-          result: ''
-        })
-      }
-  
+        const response = await ISDNModel.findOne({ $and: [paramsQuery] }, null, { sort: { updatedAt: -1 } });
+        if (response) {
+            res.status(200).send({
+                status: 1,
+                result: response
+            })
+        } else {
+            res.status(203).send({
+                status: 0,
+                result: ''
+            })
+        }
+
     } catch (error) {
-      res.status(500).send({
-        status: 0,
-        result: error
-      })
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
     }
-  });
+});
+app.post('/setinfo_viettel', async function (req, res, next) {
+    try {
+        const paramsQuery = Object.assign({}, req.body);
+        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
+        if (ISDN !== null) {
+            res.status(200).send({
+                status: 1,
+                result: ISDN.content
+            })
+        } else {
+            res.status(400).send({
+                status: 0,
+                result: 'not existed'
+            })
+        }
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+})
 app.post('/setinfo', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
