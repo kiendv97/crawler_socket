@@ -101,9 +101,9 @@ app.post('/setinfo', async function (req, res, next) {
         })
     }
 });
-app.get('/check_viettel', async (req,res,next) => {
+app.get('check_viettel', async (req,res,next) => {
     const paramsQuery = Object.assign({}, req.query);
-    try {
+     try {
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
             keyword: paramsQuery.keyword || 0,
@@ -112,6 +112,7 @@ app.get('/check_viettel', async (req,res,next) => {
 
         }
         const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
+        const checkRequest5Minutes = response ? new Date(Date.now() - response.updatedAt).getMinutes() : 0;
         console.log("Find keyword:" + response);
         if (response === null) {
             const result = await ISDNModel.create(newISDN);
@@ -120,6 +121,13 @@ app.get('/check_viettel', async (req,res,next) => {
                 result: 'create'
             })
 
+        } else if (checkRequest5Minutes > 5) {
+            await ISDNModel.updateOne({ keyword: newISDN.keyword }, { $set: { status: 0, updatedAt: Date.now() } });
+
+            res.status(200).send({
+                status: 1,
+                result: 'update'
+            })
         } else {
             res.status(203).send({
                 status: 0,
