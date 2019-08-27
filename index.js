@@ -22,7 +22,30 @@ app.use((req, res, next) => {
     next();
 
 });
-
+app.get('/getdetails', async (req, res, next) => {
+    const paramsQuery = Object.assign({}, req.query, { status: 1 });
+    console.log(paramsQuery);
+    try {
+      const response = await ISDNModel.findOne({ $and: [paramsQuery] }, null, { sort: { updatedAt: -1 } });
+      if (response) {
+        res.status(200).send({
+          status: 1,
+          result: response
+        })
+      } else {
+        res.status(203).send({
+          status: 0,
+          result: ''
+        })
+      }
+  
+    } catch (error) {
+      res.status(500).send({
+        status: 0,
+        result: error
+      })
+    }
+  });
 app.post('/setinfo', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
