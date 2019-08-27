@@ -101,7 +101,7 @@ app.post('/setinfo', async function (req, res, next) {
         })
     }
 });
-app.get('check_viettel', async (req,res,next) => {
+app.get('/check_viettel', async (req,res,next) => {
     const paramsQuery = Object.assign({}, req.query);
      try {
         const newISDN = {
