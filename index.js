@@ -101,6 +101,40 @@ app.post('/setinfo', async function (req, res, next) {
         })
     }
 });
+app.get('check_viettel', async (req,res,next) => {
+    const paramsQuery = Object.assign({}, req.query);
+    try {
+        const newISDN = {
+            telco: paramsQuery.telco || 'mobi',
+            keyword: paramsQuery.keyword || 0,
+            user: paramsQuery.user || 'admin',
+            status: 0, //pending
+
+        }
+        const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
+        console.log("Find keyword:" + response);
+        if (response === null) {
+            const result = await ISDNModel.create(newISDN);
+            res.status(200).send({
+                status: 1,
+                result: 'create'
+            })
+
+        } else {
+            res.status(203).send({
+                status: 0,
+                result: 'request must be greater 5 minute'
+            })
+        }
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+})
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
     ioServer.emit('send_data', paramsQuery);
