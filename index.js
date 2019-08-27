@@ -26,7 +26,7 @@ app.get('/getdetails', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query, { status: 0 });
     console.log(paramsQuery);
     try {
-        const response = await ISDNModel.findOne({status: 0, telco: req.query.telco});
+        const response = await ISDNModel.findOne(paramsQuery);
         if (response) {
             res.status(200).send({
                 status: 1,
@@ -49,7 +49,7 @@ app.get('/getdetails', async (req, res, next) => {
 app.post('/setinfo_viettel', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
+        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now()} });
         if (ISDN !== null) {
             res.status(200).send({
                 status: 1,
