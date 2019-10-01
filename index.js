@@ -50,7 +50,10 @@ app.get('/getdetails', async (req, res, next) => {
 });
 app.post('/setinfo_viettel', async function (req, res, next) {
     try {
+        console.log(paramsQuery);
+        
         const paramsQuery = Object.assign({}, req.body);
+        console.log(paramsQuery);
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content} });
         if (ISDN !== null) {
             res.status(200).send({
