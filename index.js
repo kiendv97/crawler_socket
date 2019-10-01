@@ -50,7 +50,6 @@ app.get('/getdetails', async (req, res, next) => {
 });
 app.post('/setinfo_viettel', async function (req, res, next) {
     try {
-        console.log(paramsQuery);
         
         const paramsQuery = Object.assign({}, req.body);
         console.log(paramsQuery);
