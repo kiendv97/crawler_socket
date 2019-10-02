@@ -22,6 +22,32 @@ app.use((req, res, next) => {
     next();
 
 });
+app.get('/checking-regType', async (req,res,next)=>{
+    const queryField = Object.assign({},req.query);
+    console.log(queryField);
+    try {
+        const response = await ISDNModel.findOne({ telco: queryField.telco, keyword: queryField.keyword });
+        console.log(response);
+
+        if (response) {
+            res.status(200).send({
+                status: 1,
+                result: response
+            })
+        } else {
+            res.status(400).send({
+                status: 0,
+                result: 'not existed'
+            })
+        }
+    } catch (error) {
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+    
+})
 app.get('/getdetails', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query, { status: 0 });
     console.log(paramsQuery);
