@@ -3,7 +3,7 @@ async function sendToDingtalk(data) {
   if (data.toString().indexOf('Số còn') != -1) { 
   data = data.replace('Số còn,','');
     axios
-      .post(`https://oapi.dingtalk.com/robot/send?access_token=0bc33e83ba5651a3c8cadc4342722641d3237abae0fc9c53626476fce40fda58`, {
+      .post(`https://oapi.dingtalk.com/robot/send?access_token=dea7a78c5d8e0cb10d969f8c508da06ef30256f4d0b97ed5e1e2c9125a2d2663`, {
         "msgtype": "text",
         "text": {
           "content": data
@@ -18,7 +18,7 @@ async function sendToDingtalk(data) {
   if (data.toString().indexOf('Số không còn') != -1) {
     data = data.replace('Số không còn','');
     axios
-      .post(`https://oapi.dingtalk.com/robot/send?access_token=9c756be3eaf9ee594fa24146eb72cdf1f5c9105bae8079859a30d4d45c23f33b`, {
+      .post(`https://oapi.dingtalk.com/robot/send?access_token=6a00ab3e0cf635cef448dd752ef254baa885b90bc249f38639cdb3c23e96e454`, {
         "msgtype": "text",
         "text": {
           "content": data
