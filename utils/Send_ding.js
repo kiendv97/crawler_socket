@@ -3,7 +3,7 @@ async function sendToDingtalk(data) {
   if (data.toString().indexOf('Số còn') != -1) { 
   data = data.replace('Số còn,','');
     axios
-      .post(`https://oapi.dingtalk.com/robot/send?access_token=dea7a78c5d8e0cb10d969f8c508da06ef30256f4d0b97ed5e1e2c9125a2d2663`, {
+      .post(`https://oapi.dingtalk.com/robot/send?access_token=49110920577c930c500559225091ca9b1f04cecf52e59f947cd05084e2fb05c0`, {
         "msgtype": "text",
         "text": {
           "content": data
