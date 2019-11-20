@@ -13,7 +13,7 @@ async function convert(newMobi, username) {
     var finalCheck = checkChangeDate + checkChangeMonth * 30 + checkChangeYear * 365
 
 
-    if (newMobi['Trạng thái'].toString().search('Số ghép lô') == 0 || newMobi['Trạng thái'].toString().search('Số đang sử dụng') == 0 || newMobi['Số cấm tác động'].toString().indexOf('Không') == -1) {
+    if (newMobi['Trạng thái'].toString().search('Số ghép lô') == 0 || newMobi['Trạng thái'].toString().search('Số đang sử dụng') == 0 || newMobi['Số cấm tác động'].toString().indexOf('Không') == -1 || newMobi['Công ty'].toString().indexOf('100 -  Chọn số online') == 0) {
         infoString += '\nSố không còn'
 
     } else {
