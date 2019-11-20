@@ -16,7 +16,7 @@ async function convert(newMobi, username) {
     if (newMobi['Trạng thái'].toString().search('Số ghép lô') == 0 ||
         newMobi['Trạng thái'].toString().search('Số đang sử dụng') == 0 ||
         newMobi['Số cấm tác động'].toString().indexOf('Không') == -1 ||
-        newMobi['Công ty'].toString().search('100 -  Chọn số online') == 0) {
+        newMobi['Công ty'].toString().trim().search('100') == 0) {
         infoString += '\nSố không còn'
 
     } else {
