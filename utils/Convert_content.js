@@ -13,16 +13,19 @@ async function convert(newMobi, username) {
     var finalCheck = checkChangeDate + checkChangeMonth * 30 + checkChangeYear * 365
 
 
-    if (newMobi['Trạng thái'].toString().search('Số ghép lô') == 0 || newMobi['Trạng thái'].toString().search('Số đang sử dụng') == 0 || newMobi['Số cấm tác động'].toString().indexOf('Không') == -1 || newMobi['Công ty'].toString().indexOf('100 -  Chọn số online') == 0) {
+    if (newMobi['Trạng thái'].toString().search('Số ghép lô') == 0 ||
+        newMobi['Trạng thái'].toString().search('Số đang sử dụng') == 0 ||
+        newMobi['Số cấm tác động'].toString().indexOf('Không') == -1 ||
+        newMobi['Công ty'].toString().indexOf('100 - Chọn số online') == 0) {
         infoString += '\nSố không còn'
 
     } else {
         if ((newMobi['Loại TB'].toString().indexOf('Số MobiCard') == 0 || newMobi['Loại TB'].toString().indexOf('Số MobiFone') == 0) && newMobi['Loại cam kết'].toString().indexOf('KHONG_CK') == 0) {
 
             infoString += '\nSố còn, trả sau thường' + ' gói từ 69k'
-        } else if (newMobi['Mã cửa hàng'].toString().indexOf('2HCMCKCN') == 0 ) {
+        } else if (newMobi['Mã cửa hàng'].toString().indexOf('2HCMCKCN') == 0) {
             infoString += '\nSố còn, trả sau cam kết ' + newMobi['Loại cam kết'].toString().split('_')[0].slice(2) + 'K';
-        } else if(newMobi['Mã cửa hàng'].toString().indexOf('PHONGTHUY') == 0) {
+        } else if (newMobi['Mã cửa hàng'].toString().indexOf('PHONGTHUY') == 0) {
             infoString += '\nSố còn, trả sau thường' + ' gói từ 69k'
         }
         else {
