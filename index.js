@@ -220,11 +220,12 @@ app.get('/check', async (req, res, next) => {
 app.post('/exist-keyword', async (req,res,next) => {
     try {
       const listPhone = req.body.listPhone
+      const telco = req.body.telco || 'mobi'
       if(!listPhone) throw 'Phai truyen vao list so'
   
       console.log('[listPhone] ',listPhone);
       
-      const listKeyword = await ISDNModel.find({keyword: {$in: listPhone}})
+      const listKeyword = await ISDNModel.find({keyword: {$in: listPhone}, telco: `${telco}`})
       res.status(200).send({
         status: 1,
         result: listKeyword
