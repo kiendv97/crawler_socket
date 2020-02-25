@@ -7,6 +7,7 @@ const httpServer = http.createServer(app)
 
 const ioServer = require('socket.io')(httpServer);
 const sendDing = require('./utils/Send_ding');
+const {api_chat} = require('./utils/chat.topsim')
 const convert_content = require('./utils/Convert_content');
 const ISDNModel = require('./model/model');
 httpServer.listen(3000, () => {
@@ -107,8 +108,7 @@ app.post('/setinfo', async function (req, res, next) {
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
             const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
-            console.log('Dataxxxx: ' + finalContent.toString().indexOf('Số còn'));
-            console.log('Datayyyy: ' + finalContent.toString().indexOf('Số không còn'));
+            await api_chat(finalContent);
             await sendDing(finalContent);
             res.status(200).send({
                 status: 1,
@@ -129,6 +129,7 @@ app.post('/setinfo', async function (req, res, next) {
         })
     }
 });
+
 app.get('/check_viettel', async (req,res,next) => {
     const paramsQuery = Object.assign({}, req.query);
      try {
@@ -214,8 +215,76 @@ app.get('/check', async (req, res, next) => {
         })
     }
 
+});
+app.post('/check_chat_topsim', async (req, res, next) => {
+    let paramsQuery = Object.assign({}, req.body);
+    ioServer.emit('send_data', paramsQuery);
+    try {
+        const newISDN = {
+            telco: paramsQuery.telco || 'mobi',
+            keyword: paramsQuery.keyword || 0,
+            user: paramsQuery.user || 'admin',
+            status: 0, //pending
 
+        }
+        const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
+        const checkRequest5Minutes = response ? new Date(Date.now() - response.updatedAt).getMinutes() : 0;
+        console.log("Find keyword:" + response);
+        if (response === null) {
+            const result = await ISDNModel.create(newISDN);
+            res.status(200).send({
+                status: 1,
+                result: 'create'
+            })
 
+        } else if (checkRequest5Minutes > 5) {
+            await ISDNModel.updateOne({ keyword: newISDN.keyword }, { $set: { status: 0, updatedAt: Date.now() } });
+
+            res.status(200).send({
+                status: 1,
+                result: 'update'
+            })
+        } else {
+            res.status(203).send({
+                status: 0,
+                result: 'request must be greater 5 minute'
+            })
+        }
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+
+});
+app.post('/setinfo-chat', async function (req, res, next) {
+    try {
+        const paramsQuery = Object.assign({}, req.body);
+        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
+        if (ISDN !== null) {
+            const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
+            await api_chat({content: finalContent, info: paramsQuery.extraInfo});
+            res.status(200).send({
+                status: 1,
+                result: ISDN.content
+            })
+        } else {
+            res.status(200).send({
+                status: 0,
+                result: 'not existed'
+            })
+        }
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
 });
 app.post('/exist-keyword', async (req,res,next) => {
     try {
