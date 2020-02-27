@@ -108,7 +108,6 @@ app.post('/setinfo', async function (req, res, next) {
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
             const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
-            await api_chat(finalContent);
             await sendDing(finalContent);
             res.status(200).send({
                 status: 1,
@@ -263,13 +262,12 @@ app.post('/check_chat_topsim', async (req, res, next) => {
 app.post('/setinfo-chat', async function (req, res, next) {
     try {
         const paramsQuery = Object.assign({}, req.body);
-        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
-        if (ISDN !== null) {
+        if (Object.entries(paramsQuery.content).length !== 0) {
             const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
             await api_chat({content: finalContent, info: paramsQuery.extraInfo});
             res.status(200).send({
                 status: 1,
-                result: ISDN.content
+                result: finalContent
             })
         } else {
             res.status(200).send({
