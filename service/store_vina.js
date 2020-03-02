@@ -16,7 +16,7 @@ async function vinaStore(phoneNumber, info, user) {
         let result = [];
         do {
              result = await getTokenGGCapchaFinal('toanquoc', cutStart(phoneNumber), cutEnd(phoneNumber)) 
-        } while (!result && result.length > 3); 
+        } while (!result || result.length > 3); 
         await sendingResult(result, info, user, phoneNumber)
         console.log("DONE ", phoneNumber);
     } catch (error) {
