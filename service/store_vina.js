@@ -14,9 +14,11 @@ let instance = axios.create({
 async function vinaStore(phoneNumber, info, user) {
     try {
         let result = [];
+        let count = 0;
         do {
-             result = await getTokenGGCapchaFinal('toanquoc', cutStart(phoneNumber), cutEnd(phoneNumber)) 
-        } while (!result || result.length > 3); 
+            count++
+            result = await getTokenGGCapchaFinal('toanquoc', cutStart(phoneNumber), cutEnd(phoneNumber)) 
+        } while (result.length == 0 || result.length > 3 || count < 4);
         await sendingResult(result, info, user, phoneNumber)
         console.log("DONE ", phoneNumber);
     } catch (error) {
@@ -107,8 +109,7 @@ async function crawlData(HTMCrawl) {
                         "Thời gian cam kết:": ttck,
                         "Cước cam kết": cck
                     }
-                    ArrSim = [...ArrSim, Object.assign({}, ObjectSim)];
-
+                    if(stb !== 'Không có dữ liệu')  ArrSim = [...ArrSim, Object.assign({}, ObjectSim)];
                 }
             });
             return ArrSim 
