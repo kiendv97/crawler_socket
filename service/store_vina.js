@@ -112,11 +112,11 @@ async function crawlData(HTMCrawl) {
                     let ttck = $('tr').eq(a).children('td').eq(3).text().trim();
                     let cck = $('tr').eq(a).children('td').eq(4).text().trim();
                     let ObjectSim = {
-                        "Số thuê bao: ": stb,
-                        "Loại thuê bao: ": ltb,
+                        "stb": stb,
+                        "ltb": ltb,
                         "Giá: ": gia,
-                        "Thời gian cam kết:": ttck,
-                        "Cước cam kết": cck
+                        "ttck": ttck,
+                        "cck": cck
                     }
                     if(stb !== 'Không có dữ liệu')  ArrSim = [...ArrSim, Object.assign({}, ObjectSim)];
                 }
