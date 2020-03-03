@@ -17,7 +17,7 @@ async function vinaStore(phoneNumber, info, user) {
         let count = 0;
         let simString = '';
         do {
-            count++
+            count++ 
             result = await getTokenGGCapchaFinal('toanquoc', cutStart(phoneNumber), cutEnd(phoneNumber)) 
         } while ((result.length == 0 || result.length > 3 ) && count < 4);
 
