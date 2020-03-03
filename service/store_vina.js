@@ -15,11 +15,20 @@ async function vinaStore(phoneNumber, info, user) {
     try {
         let result = [];
         let count = 0;
+        let simString = '';
         do {
             count++
             result = await getTokenGGCapchaFinal('toanquoc', cutStart(phoneNumber), cutEnd(phoneNumber)) 
         } while ((result.length == 0 || result.length > 3 ) && count < 4);
-        await sendingResult(result, info, user, phoneNumber)
+
+        if(result.length !== 0) {
+            result.forEach(item => {
+                simString += `${item.stb} - ${item.ltb} -${item.ttck} -${item.cck}\n`
+            })
+        } else {
+            simString = 'Không có kết quả trả về'
+        }
+        await sendingResult(simString, info, user, phoneNumber)
         console.log("DONE ", phoneNumber);
     } catch (error) {
         throw Error(error.message)
