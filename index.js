@@ -62,7 +62,6 @@ app.get('/getdetails', async (req, res, next) => {
     console.log(paramsQuery);
     try {
         const response = await ISDNModel.findOne({ telco: paramsQuery.telco, status: 0 });
-        console.log(response);
 
         if (response) {
             res.status(200).send({
@@ -87,7 +86,6 @@ app.post('/setinfo_viettel', async function (req, res, next) {
     try {
 
         const paramsQuery = Object.assign({}, req.body);
-        console.log(paramsQuery);
         const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
             res.status(200).send({
@@ -149,7 +147,6 @@ app.get('/check_viettel', async (req, res, next) => {
         }
         const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
         const checkRequest5Minutes = response ? new Date(Date.now() - response.updatedAt).getMinutes() : 0;
-        console.log("Find keyword:" + response);
         if (response === null) {
             const result = await ISDNModel.create(newISDN);
             res.status(200).send({
