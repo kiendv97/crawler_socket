@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 const kue = require('kue')
     , queue = kue.createQueue();
 
-var job = queue.create('delay_check', { keyword: 'test' }).save(function (error) {
+var job = queue.create('delay_check').save(function (error) {
     if (!error) console.log(job.id);
     else console.log(error);
 });
@@ -181,10 +181,13 @@ app.get('/check_viettel', async (req, res, next) => {
 })
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    queue.process('queue_delay', 15000, function (job, done) {
-        console.log('15s test');
-        ioServer.emit('send_data', paramsQuery);
-        done()
+    queue.process('delay_check', function (job, done) {
+        setTimeout(() => {
+            console.log('15s test');
+            ioServer.emit('send_data', paramsQuery);
+            done()
+        }, 15000)
+
     });
     try {
         const newISDN = {
