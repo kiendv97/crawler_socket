@@ -7,7 +7,7 @@ const httpServer = http.createServer(app)
 
 const ioServer = require('socket.io')(httpServer);
 const sendDing = require('./utils/Send_ding');
-const {api_chat} = require('./utils/chat.topsim')
+const { api_chat } = require('./utils/chat.topsim')
 const convert_content = require('./utils/Convert_content');
 const ISDNModel = require('./model/model');
 httpServer.listen(3000, () => {
@@ -23,8 +23,16 @@ app.use((req, res, next) => {
     next();
 
 });
-app.get('/checking-regType', async (req,res,next)=>{
-    const queryField = Object.assign({},req.query);
+
+const kue = require('kue')
+    , queue = kue.createQueue();
+
+var job = queue.create('delay_check', { keyword: 'test' }).save(function (error) {
+    if (!error) console.log(job.id);
+    else console.log(error);
+});
+app.get('/checking-regType', async (req, res, next) => {
+    const queryField = Object.assign({}, req.query);
     console.log(queryField);
     try {
         const response = await ISDNModel.findOne({ telco: queryField.telco, keyword: queryField.keyword });
@@ -47,7 +55,7 @@ app.get('/checking-regType', async (req,res,next)=>{
             result: error
         })
     }
-    
+
 })
 app.get('/getdetails', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query, { status: 0 });
@@ -55,7 +63,7 @@ app.get('/getdetails', async (req, res, next) => {
     try {
         const response = await ISDNModel.findOne({ telco: paramsQuery.telco, status: 0 });
         console.log(response);
-        
+
         if (response) {
             res.status(200).send({
                 status: 1,
@@ -77,10 +85,10 @@ app.get('/getdetails', async (req, res, next) => {
 });
 app.post('/setinfo_viettel', async function (req, res, next) {
     try {
-        
+
         const paramsQuery = Object.assign({}, req.body);
         console.log(paramsQuery);
-        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content} });
+        const ISDN = await ISDNModel.findOneAndUpdate({ keyword: paramsQuery.keyword }, { $set: { status: 1, reponsedAt: Date.now(), content: paramsQuery.content } });
         if (ISDN !== null) {
             res.status(200).send({
                 status: 1,
@@ -129,9 +137,9 @@ app.post('/setinfo', async function (req, res, next) {
     }
 });
 
-app.get('/check_viettel', async (req,res,next) => {
+app.get('/check_viettel', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-     try {
+    try {
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
             keyword: paramsQuery.keyword || 0,
@@ -173,7 +181,11 @@ app.get('/check_viettel', async (req,res,next) => {
 })
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    ioServer.emit('send_data', paramsQuery);
+    queue.process('queue_delay', 15000, function (job, done) {
+        console.log('15s test');
+        ioServer.emit('send_data', paramsQuery);
+        done()
+    });
     try {
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
@@ -264,7 +276,7 @@ app.post('/setinfo-chat', async function (req, res, next) {
         const paramsQuery = Object.assign({}, req.body);
         if (Object.entries(paramsQuery.content).length !== 0) {
             const finalContent = await convert_content(paramsQuery.content, paramsQuery.user)
-            await api_chat({content: finalContent, info: paramsQuery.extraInfo});
+            await api_chat({ content: finalContent, info: paramsQuery.extraInfo });
             res.status(200).send({
                 status: 1,
                 result: finalContent
@@ -284,24 +296,24 @@ app.post('/setinfo-chat', async function (req, res, next) {
         })
     }
 });
-app.post('/exist-keyword', async (req,res,next) => {
+app.post('/exist-keyword', async (req, res, next) => {
     try {
-      const listPhone = req.body.listPhone
-      const telco = req.body.telco || 'mobi'
-      if(!listPhone) throw 'Phai truyen vao list so'
-  
-      console.log('[listPhone] ',listPhone);
-      
-      const listKeyword = await ISDNModel.find({keyword: {$in: listPhone}, telco: `${telco}`})
-      res.status(200).send({
-        status: 1,
-        result: listKeyword
-      })
-  
+        const listPhone = req.body.listPhone
+        const telco = req.body.telco || 'mobi'
+        if (!listPhone) throw 'Phai truyen vao list so'
+
+        console.log('[listPhone] ', listPhone);
+
+        const listKeyword = await ISDNModel.find({ keyword: { $in: listPhone }, telco: `${telco}` })
+        res.status(200).send({
+            status: 1,
+            result: listKeyword
+        })
+
     } catch (error) {
-      res.status(500).send({
-        status: 0,
-        result: error
-      })
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
     }
-  })
+})
