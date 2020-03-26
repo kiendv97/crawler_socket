@@ -178,15 +178,14 @@ app.get('/check_viettel', async (req, res, next) => {
 })
 app.get('/check', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    queue.process('delay_check', function (job, done) {
-        setTimeout(() => {
-            console.log('15s test');
-            ioServer.emit('send_data', paramsQuery);
-            done()
-        }, 15000)
-
-    });
     try {
+        //set queue
+        queue.process('delay_check', function (job, done) {
+            setTimeout(() => {
+                console.log('15s test');
+                ioServer.emit('send_data', paramsQuery);
+            }, 15000)
+        });
         const newISDN = {
             telco: paramsQuery.telco || 'mobi',
             keyword: paramsQuery.keyword || 0,
