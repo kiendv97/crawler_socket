@@ -179,10 +179,14 @@ app.get('/check_viettel', async (req, res, next) => {
 
 queue.process("delay_check", async function (job, done) {
     let { data } = job;
-    ioServer.emit('send_data', data.paramsQuery);
-    console.log("15s");
+    setTimeout(() => {
+        ioServer.emit('send_data', data.paramsQuery);
+        console.log("15s");
+        done();
 
-    done();
+    }, 15000)
+
+
 });
 
 app.get('/check', async (req, res, next) => {
@@ -190,7 +194,7 @@ app.get('/check', async (req, res, next) => {
     try {
         //set queue
         queue.createJob('delay_check', { paramsQuery: paramsQuery })
-            .delay(15000) // relative to now.
+            .delay(15000)
             .save(function (err) {
                 if (!err) console.log('Ok');
 
