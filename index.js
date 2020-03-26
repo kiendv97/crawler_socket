@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 const kue = require('kue')
     , queue = kue.createQueue();
 
-var job = queue.create('delay_check').save(function (error) {
+var job = queue.create('delay_check').delay(15000).save(function (error) {
     if (!error) console.log(job.id);
     else console.log(error);
 });
