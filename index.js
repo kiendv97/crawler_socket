@@ -135,6 +135,34 @@ app.post('/setinfo', async function (req, res, next) {
     }
 });
 
+app.get('/check_itel', async (req, res, next) => {
+    const paramsQuery = Object.assign({}, req.query);
+    ioServer.emit('send_data', paramsQuery);
+    try {
+        const newISDN = {
+            telco: paramsQuery.telco || 'itel',
+            keyword: paramsQuery.keyword || 0,
+            user: paramsQuery.user || 'admin',
+            status: 0, //pending
+
+        }
+        const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
+        if (!response) {
+            const result = await ISDNModel.create(newISDN);
+            return res.status(200).send({
+                status: "SUCCESS",
+            })
+
+        }
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+})
 app.get('/check_viettel', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
     try {
@@ -179,9 +207,9 @@ app.get('/check_viettel', async (req, res, next) => {
 
 queue.process("delay_check", async function (job, done) {
     let { data } = job;
+    ioServer.emit('send_data', data.paramsQuery);
+    console.log("15s", data.paramsQuery);
     setTimeout(() => {
-        ioServer.emit('send_data', data.paramsQuery);
-        console.log("15s");
         done();
     }, 15000)
 
