@@ -153,6 +153,10 @@ app.get('/check_itel', async (req, res, next) => {
                 status: "SUCCESS",
             })
 
+        } else {
+            return res.status(200).send({
+                status: "update",
+            })
         }
     } catch (error) {
         console.log(error);
