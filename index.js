@@ -134,17 +134,38 @@ app.post('/setinfo', async function (req, res, next) {
         })
     }
 });
+// app.post('/auto-connected', async (req, res, next) => {
+//     try {
+//         if (req.query.on) {
+//             let result = req.body
+//             if (!result) return res.status(400).json({ status: "Truyền dữ liệu vào chưa?" })
+//             ioServer.emit('result_connected', result);
+//             return res.status(200).json({ status: "SUCCESS" })
+//         } else if (req.query.emit) {
+//             let data = req.body
+//             if (!data) return res.status(400).json({ status: "Truyền dữ liệu vào chưa?" })
+//             ioServer.emit('auto_connected', data);
+//             return res.status(200).json({ status: "SUCCESS" })
+//         }
+//         return res.status(400).json({ status: "chưa truyên đúng thông tin" })
 
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send({
+//             status: 0,
+//             result: error
+//         })
+//     }
+// })
 app.get('/check_itel', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
-    ioServer.emit('send_data', paramsQuery);
+    ioServer.emit('send_data_itel', paramsQuery);
     try {
         const newISDN = {
             telco: paramsQuery.telco || 'itel',
             keyword: paramsQuery.keyword || 0,
             user: paramsQuery.user || 'admin',
             status: 0, //pending
-
         }
         const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
         if (!response) {
@@ -160,7 +181,6 @@ app.get('/check_itel', async (req, res, next) => {
         }
     } catch (error) {
         console.log(error);
-
         res.status(500).send({
             status: 0,
             result: error
