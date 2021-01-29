@@ -194,6 +194,36 @@ app.get('/check_itel', async (req, res, next) => {
         })
     }
 })
+app.get('/check_vnmb', async (req, res, next) => {
+    const paramsQuery = Object.assign({}, req.query);
+    ioServer.emit('send_data_vnmb', paramsQuery);
+    try {
+        const newISDN = {
+            telco: paramsQuery.telco || 'send_data_vnmb',
+            keyword: paramsQuery.keyword || 0,
+            user: paramsQuery.user || 'admin',
+            status: 0, //pending
+        }
+        const response = await ISDNModel.findOne({ keyword: newISDN.keyword });
+        if (!response) {
+            const result = await ISDNModel.create(newISDN);
+            return res.status(200).send({
+                status: "SUCCESS",
+            })
+
+        } else {
+            return res.status(200).send({
+                status: "update",
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            status: 0,
+            result: error
+        })
+    }
+})
 app.get('/check_viettel', async (req, res, next) => {
     const paramsQuery = Object.assign({}, req.query);
     try {
