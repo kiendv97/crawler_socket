@@ -1,7 +1,8 @@
 const http = require('http');
 const bodyParser = require('body-parser');
 const createError = require('http-errors');
-var express = require('express');
+const express = require('express');
+const cors = require('cors')
 const app = express();
 const httpServer = http.createServer(app)
 
@@ -16,6 +17,7 @@ httpServer.listen(3000, () => {
 require('./connect_mongo'); // connect mongoose
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
+app.use(cors({origin: '*'}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
